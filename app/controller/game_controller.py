@@ -167,7 +167,8 @@ class GameController:
             "  pegar [item]             - Pega um item da sala. (Use o nome exato do item)\n"
             "  largar [item]            - Larga um item do inventário.\n"
             "  ajuda                    - Exibe este menu.\n"
-            "  sair                     - Encerra o jogo."
+            "  sair                     - Encerra o jogo.\n"
+            "usar [item]                - Usa item na sala."
         )
         self.view.display_message(help_text)
         # Pausa para o usuário ler a ajuda antes de retornar ao jogo, limpando a tela no próximo ciclo.
@@ -177,7 +178,7 @@ class GameController:
         """Lógica para usar item em uma sala."""
         if item in self.player.itens:
             item = self.player.current_room.get_useItem(item)
-            self.feedback_message = f"Você está usando o item {item}\n {item[]}"
+            self.feedback_message = f"Você está usando o item {item}\n {item['action']}"
         else:
             self.feedback_message = f"Você não tem '{item}' no seu inventário."
 

@@ -1,10 +1,10 @@
 class Room:
-    def __init__(self, name, description, exits, items):
+    def __init__(self, name, description, exits, items, useItem):
         self.name = name
         self.description = description
         self.exits = exits # {'north': 'sala de musica', ...}
         self.items = items # {'faca': 'faca ornamental sem fio', ...}
-        self.useItem = []  #[{"item" : "partitura", "description": "alguma coisa curta" ,"action": ? }]
+        self.useItem = useItem  #[{"item" : "partitura", "description": "alguma coisa curta" ,"action": ? }]
 
     def get_item(self, item_name):
         """

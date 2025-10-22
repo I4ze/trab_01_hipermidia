@@ -9,6 +9,14 @@
         "faca" : "faca ornamental sem fio"
 	}
     },
+    "use" : [
+	{"item" : "partitura",
+        "description": "O piano começa a tocar uma música.",
+	"action" : ""},
+	{"item" : "machado",
+        "description": "O piano foi destruído para sempre.",
+	"action" : ""}
+    ],
   "sala de musica" : {
     "description" : "Essa é a sala de música.",
     "south" : "hall",
