@@ -94,6 +94,8 @@ class GameController:
             self._handle_take(target)
         elif action == 'largar' and target:
             self._handle_drop(target)
+        elif action == 'usar' and target:
+            self._handle_usar(target)
         elif action == 'sair':
             self.feedback_message = "Encerrando o jogo. Até a próxima!"
             self.running = False
@@ -170,3 +172,13 @@ class GameController:
         self.view.display_message(help_text)
         # Pausa para o usuário ler a ajuda antes de retornar ao jogo, limpando a tela no próximo ciclo.
         self.view.get_command("\nPressione ENTER para voltar ao jogo...")
+
+    def _handle_usar(self, item):
+        """Lógica para usar item em uma sala."""
+        if item in self.player.itens:
+            item = self.player.current_room.get_useItem(item)
+            self.feedback_message = f"Você está usando o item {item}\n {item[]}"
+        else:
+            self.feedback_message = f"Você não tem '{item}' no seu inventário."
+
+

@@ -4,7 +4,8 @@ class Room:
         self.description = description
         self.exits = exits # {'north': 'sala de musica', ...}
         self.items = items # {'faca': 'faca ornamental sem fio', ...}
-    
+        self.useItem = []  #[{"item" : "partitura", "description": "alguma coisa curta" ,"action": ? }]
+
     def get_item(self, item_name):
         """
         Remove item da sala
@@ -17,4 +18,5 @@ class Room:
         """
         self.items[item_name] = item_description
         
-        
+    def get_useItem(self, item_name):
+        return self.useItem[item_name]

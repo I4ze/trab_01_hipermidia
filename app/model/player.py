@@ -3,7 +3,7 @@ class Player:
         self.current_room = current_room
         self.itens = {}
         self.max_itens = max_itens
-    
+
     def move(self, next_room):
         """Atualiza a sala atual do jogador."""
         self.current_room = next_room
@@ -18,5 +18,14 @@ class Player:
             return True
         else:
             return False
-        
-        
+
+    def drop_item(self, item_name):
+        """
+        Remove um item do inventário.
+        Retorna descrição do item se foi removido, none caso contrário.
+        """
+        if item_name in self.itens:
+            return self.itens.pop(item_name)
+
+        else:
+            return None
