@@ -19,4 +19,8 @@ class Room:
         self.items[item_name] = item_description
         
     def get_useItem(self, item_name):
-        return self.useItem[item_name]
+        for useItem in self.useItem:
+            if useItem["item"] == item_name:
+                return useItem
+        
+        return None

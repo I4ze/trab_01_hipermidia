@@ -177,8 +177,11 @@ class GameController:
     def _handle_usar(self, item):
         """Lógica para usar item em uma sala."""
         if item in self.player.itens:
-            item = self.player.current_room.get_useItem(item)
-            self.feedback_message = f"Você está usando o item {item}\n {item['action']}"
+            itemSala = self.player.current_room.get_useItem(item)
+            if itemSala:
+                self.feedback_message = f"Você usou o item {item}\n {itemSala["description"]}"
+            else:
+                self.feedback_message = f"Você usou o item {item}\nNada aconteceu\nVocê recolhe o item"
         else:
             self.feedback_message = f"Você não tem '{item}' no seu inventário."
 

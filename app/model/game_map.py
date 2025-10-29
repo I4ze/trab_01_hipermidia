@@ -22,7 +22,7 @@ class GameMap:
                 itens = room_data.get('itens')
                 useItem = room_data.get('use')
                 # Direções são as chaves restantes (north, south, east, west)
-                exits = {k: v for k, v in room_data.items() if k not in ['description', 'itens']}
+                exits = {k: v for k, v in room_data.items() if k not in ['description', 'itens', 'use']}
                 self.rooms[room_name] = Room(room_name, description, exits, itens, useItem)
 
     def get_room(self, room_name):
