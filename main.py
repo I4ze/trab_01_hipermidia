@@ -1,4 +1,3 @@
-# Arquivo: main.py
 from enum import nonmember
 
 from app.controller.game_controller import GameController

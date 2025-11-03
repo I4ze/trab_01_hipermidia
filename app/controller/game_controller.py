@@ -1,5 +1,3 @@
-# Importa as dependências do Model e View
-# Nota: O '.' é para importação relativa dentro do pacote 'app'.
 from ..model.game_map import GameMap
 from ..model.player import Player
 from ..view.game_view import GameView 
@@ -10,7 +8,7 @@ class GameController:
     Gerencia o loop do jogo, processa comandos e coordena Model e View.
     """
     def __init__(self):
-        # 1. Inicializa o Model (Mapa e Jogador)
+        # Inicializa o Model (Mapa e Jogador)
         self.game_map = GameMap()
         
         # Pega a sala inicial e o limite de itens do mapa para inicializar o jogador
@@ -28,50 +26,40 @@ class GameController:
         
         # Buffer de mensagem de feedback: Usado para exibir mensagens de erro/sucesso antes do redesenho da tela.
         self.feedback_message = ""
-        
-        # Controla a primeira execução
-        self.first_execution = True
 
     def start_game(self):
         """Método principal para iniciar e rodar o loop do jogo."""
         
         # 1. Mensagens Iniciais (fora do loop para que o usuário possa ler)
         self.view.clear_terminal()
-        self.view.display_message("--- Aventura RPG Iniciada! ---")
+        self.view.display_message("--- Aventura Iniciada! ---")
         self.view.display_message(f"Você pode carregar no máximo {self.player.max_itens} itens.")
         self.view.get_command("Pressione ENTER para começar...") # Pausa inicial
 
         while self.running:
             
-            # CORREÇÃO: Limpa a tela em todas as iterações, EXCETO na primeira,
-            # para que as mensagens iniciais sejam preservadas até o primeiro ENTER.
-            if not self.first_execution:
-                self.view.clear_terminal()
-            
-            # Define o first_execution como False imediatamente após a verificação
-            # Isso garante que a tela será limpa no próximo ciclo.
-            self.first_execution = False 
+            self.view.clear_terminal()
 
-            # 2. Apresenta feedback do último comando, se houver
+            # Apresenta feedback do último comando, se houver
             if self.feedback_message:
                 self.view.display_message(self.feedback_message)
                 self.feedback_message = "" # Limpa o buffer
                 
-            # 3. Apresenta a sala atual e o inventário
+            # Apresenta a sala atual e o inventário
             self.view.display_room(self.player.current_room)
             self.view.display_inventory(self.player.itens)
 
-            # 4. Verifica condição de vitória (ou derrota/exit)
+            # Verifica condição de vitória (ou derrota/exit)
             if self.player.current_room.name == self.game_map.get_exit_room_name():
                 self.view.display_message("\n*** PARABÉNS! Você encontrou a saída e completou a aventura! ***")
                 self.view.get_command("Pressione ENTER para finalizar o jogo...")
                 self.running = False
                 break
                 
-            # 5. Pega o comando do usuário
+            # Pega o comando do usuário
             command_line = self.view.get_command()
             
-            # 6. Processa o comando
+            # Processa o comando
             self.handle_command(command_line)
 
     def handle_command(self, command_line):
@@ -177,9 +165,10 @@ class GameController:
     def _handle_usar(self, item):
         """Lógica para usar item em uma sala."""
         if item in self.player.itens:
-            itemSala = self.player.current_room.get_useItem(item)
-            if itemSala:
-                self.feedback_message = f"Você usou o item {item}\n {itemSala["description"]}"
+            item_sala = self.player.current_room.get_item_usage(item)
+            if item_sala:
+                self.player.drop_item(item)
+                self.feedback_message = f"Você usou o item {item}\n{item_sala["description"]}"
             else:
                 self.feedback_message = f"Você usou o item {item}\nNada aconteceu\nVocê recolhe o item"
         else:
