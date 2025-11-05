@@ -92,7 +92,7 @@ class GameController:
 
         next_data = current_room.exits[json_direction]
 
-        # Caso a saída seja trancada
+        # caso a saída seja trancada
         if isinstance(next_data, dict):
             if next_data.get("locked", False):
                 locked_msg = next_data.get("locked_message", "A passagem está trancada.")
@@ -144,6 +144,11 @@ class GameController:
         """Lógica para usar item em uma sala."""
         if item not in self.player.itens:
             self.feedback_message = f"Você não tem '{item}' no seu inventário."
+            return
+        
+        if self.player.current_room.has_monster():
+            defeated, msg = self.player.current_room.try_defeat_monster(item)
+            self.feedback_message = msg
             return
         
         # tenta encontrar uma ação compatível na sala
