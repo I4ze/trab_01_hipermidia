@@ -1,0 +1,8 @@
+ Tipo (type)         Parâmetros esperados            O que faz                                     
+   
+ "abrir_direcao"     "direction", "target_room"    Cria ou habilita uma nova saída da sala atual 
+ "fechar_direcao"    "direction"                   Remove a direção existente                    
+ "aparecer_item"     "item_name", "item_desc"      Cria um item na sala                          
+ "remover_item"      "item_name"                   Remove um item da sala ou do inventário       
+ "aparecer_monstro"  "monster" (objeto completo)   Cria um monstro na sala                       
+ "remover_monstro"   sem parâmetros                Remove o monstro atual                        
