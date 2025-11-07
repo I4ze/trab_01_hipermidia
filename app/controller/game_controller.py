@@ -17,6 +17,7 @@ class GameController:
         self.view = GameView()
         self.running = True
         self.feedback_message = ""
+        self.previous_room = None
 
     def start_game(self):
         """Método principal para iniciar e rodar o loop do jogo."""
@@ -32,7 +33,7 @@ class GameController:
                 self.view.display_message(self.feedback_message)
                 self.feedback_message = ""
                 
-            self.view.display_room(self.player.current_room)
+            self.view.display_room(self.player.current_room, previous_room=self.previous_room)
             self.view.display_inventory(self.player.itens)
 
             if self.player.current_room.name == self.game_map.get_exit_room_name():
@@ -71,10 +72,7 @@ class GameController:
             self.feedback_message = "Comando inválido. Tente 'norte', 'pegar [item]', 'largar [item]', 'usar [item]', 'ajuda' ou 'sair'."
 
     def _handle_move(self, direction):
-        """Lógica para movimentação entre salas (incluindo trancas e up/down)."""
-        if self.player.current_room.monster:
-            self.feedback_message = "Um monstro bloqueia sua passagem! Você precisa lidar com ele primeiro."
-            return
+        """Lógica para movimentação entre salas (incluindo trancas, monstros e recuo)."""
         direction_map = {
             'norte': 'north',
             'sul': 'south',
@@ -91,29 +89,42 @@ class GameController:
             return
 
         next_data = current_room.exits[json_direction]
-
-        # caso a saída seja trancada
         if isinstance(next_data, dict):
             if next_data.get("locked", False):
                 locked_msg = next_data.get("locked_message", "A passagem está trancada.")
                 self.feedback_message = locked_msg
                 return
-            else:
-                next_room_name = next_data.get("room")
+            next_room_name = next_data.get("room")
         else:
             next_room_name = next_data
 
         next_room_object = self.game_map.get_room(next_room_name)
-        if next_room_object:
-            self.player.move(next_room_object)
+        if not next_room_object:
+            self.feedback_message = "Erro no mapa: Sala de destino não encontrada."
+            return
+
+        # verifica se há um monstro na sala atual
+        if current_room.monster:
+            # Se o jogador está tentando voltar para a sala anterior → permitir recuar
+            if self.previous_room and next_room_object == self.previous_room:
+                self.feedback_message = "Você saiu de fininho para a sala anterior..."
+            else:
+                self.feedback_message = "Um monstro bloqueia sua passagem! Talvez seja melhor recuar e procurar algo para enfrentá-lo."
+                return
+
+        # atualiza referência da sala anterior antes de mover
+        self.previous_room = current_room
+        self.player.move(next_room_object)
+
+        # mensagem de movimento
+        if not self.feedback_message:
             self.feedback_message = f"Você se moveu para {direction.upper()}."
 
-            if next_room_object.monster:
-                monster_name = next_room_object.monster.get("name", "uma criatura desconhecida")
-                monster_desc = next_room_object.monster.get("description", "Ela parece perigosa...")
-                self.feedback_message += f"\nVocê se depara com {monster_name}! {monster_desc}"
-        else:
-            self.feedback_message = "Erro no mapa: Sala de destino não encontrada."
+        # se a nova sala tiver monstro, avisa o jogador
+        if next_room_object.monster:
+            monster_name = next_room_object.monster.get("name", "uma criatura desconhecida")
+            monster_desc = next_room_object.monster.get("description", "Ela parece perigosa...")
+            self.feedback_message += f"\nVocê se depara com {monster_name}! {monster_desc}"
 
 
     def _handle_take(self, item_name):
@@ -147,8 +158,14 @@ class GameController:
             return
         
         if self.player.current_room.has_monster():
-            defeated, msg = self.player.current_room.try_defeat_monster(item)
+            derrotou, msg, perdeu = self.player.current_room.try_defeat_monster(item)
             self.feedback_message = msg
+
+            if perdeu:
+                # Mostra a mensagem final e encerra o jogo
+                self.view.display_message(f"\n{msg}\nO jogo acabou!")
+                self.view.get_command("Pressione ENTER para sair...")
+                self.running = False
             return
         
         # tenta encontrar uma ação compatível na sala

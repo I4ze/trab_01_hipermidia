@@ -9,21 +9,24 @@ class GameView:
         """Exibe uma mensagem simples para o usuário."""
         print(f"\n{message}")
 
-    def display_room(self, room):
+    def display_room(self, room, previous_room=None):
         """
         Exibe as informações detalhadas da sala atual:
-        - Descrição.
+        - Nome e descrição.
+        - Sala anterior (se houver).
         - Saídas disponíveis.
         - Itens na sala.
         """
         print("\n" + "=" * 50)
         print(f"Local atual: {room.name}")
+        if previous_room:
+            print(f"Sala anterior: {previous_room.name}")
         print("=" * 50)
-        
-        # descrição da Sala
+
+        # Descrição da Sala
         print(f"{room.description}")
-        
-        # saídas
+
+        # Saídas
         if room.exits:
             exits_list = []
             for direction, target_room in room.exits.items():
@@ -33,11 +36,14 @@ class GameView:
                 # caso a saída seja um dicionário (porta trancada, etc)
                 if isinstance(target_room, dict):
                     target_name = target_room.get("room", "???")
+                    locked = target_room.get("locked", False)
+                    if locked:
+                        exits_list.append(f"{display_dir.capitalize()} (trancada)")
+                    else:
+                        exits_list.append(f"{display_dir.capitalize()} -> {target_name.capitalize()}")
                 else:
-                    target_name = target_room
+                    exits_list.append(f"{display_dir.capitalize()} -> {target_room.capitalize()}")
 
-                exits_list.append(f"{display_dir.capitalize()} -> {target_name.capitalize()}")
-            
             print(f"\nSaídas: {', '.join(exits_list)}")
         else:
             print("\nVocê está preso!")
@@ -48,6 +54,7 @@ class GameView:
             print(f"Itens na sala: {', '.join(itens_list)}")
         else:
             print("Não há itens aqui.")
+
 
     def display_inventory(self, inventory):
         """Exibe o inventário do jogador."""
